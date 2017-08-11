@@ -18,7 +18,7 @@ struct Alumno *buscarAlumno(char *rut,struct Alumno **alumnos)
 
     for(i=0;i<MAX;i++)
     {
-        if(alumnos[i]->rut)!=NULL){
+        if(alumnos[i]!=NULL){
 
             if(strcmp(rut,alumnos[i]->rut)==0)
             {
@@ -27,7 +27,6 @@ struct Alumno *buscarAlumno(char *rut,struct Alumno **alumnos)
         }
 
     }
-
 	return NULL;
 }
 
@@ -36,13 +35,14 @@ int agregarAlumno(struct Alumno **alumnos, struct Alumno *nuevo)
 	int i;
 	if (alumnos!=NULL && nuevo!=NULL)
 	{
-	     if (buscarAlumno(nuevo->rut,alumnos)==NULL)
+		if(buscarAlumno(nuevo->rut,alumnos)==NULL)
         {
             for (i=0;i<MAX;i++)
             {
                 if(alumnos[i]==NULL)
                 {
                     alumnos[i]=nuevo;
+				
                     return 1;
                 }
             }
@@ -50,32 +50,29 @@ int agregarAlumno(struct Alumno **alumnos, struct Alumno *nuevo)
 
 	}
 	return 0;
-
 }
 
 struct Alumno *crearAlumno()
 {
 	struct Alumno *nuevo;
-    nuevo=((struct Alumno*)malloc(sizeof(struct Alumno)));
-
 	char buffer[50];
 	int largo;
+
+	nuevo=((struct Alumno*)malloc(sizeof(struct Alumno)));
 
 	printf("Ingrese el nombre");
 	scanf(" %[^\n]",buffer);
 	largo=strlen(buffer);
 	nuevo->nombre=((char *)malloc(largo*sizeof(char)));
 	strcpy(nuevo->nombre,buffer);
-	//printf("%s",nuevo->nombre);
-	free(buffer);
+
+
 
 	printf("Ingrese el rut");
 	scanf(" %[^\n]",buffer);
 	largo=strlen(buffer);
 	nuevo->rut=((char *)malloc(largo*sizeof(char)));
 	strcpy(nuevo->rut,buffer);
-	//printf("%s",nuevo->rut);
-	free(buffer);
 
 	nuevo->plibreNotas=0;
 
@@ -168,6 +165,7 @@ void menu(struct Alumno **alumnos)
 				{
 					printf("El alumno se agregó");
 				}
+				break;
 
 			case 2:
 				respuesta= agregarNotaAlumno(alumnos,agregarNota(),ingregarRut());
@@ -179,6 +177,7 @@ void menu(struct Alumno **alumnos)
 				{
 					printf("La nota se agregó");
 				}
+				break;
 
 			case 3:
 				respuesta= mostrarAlumno(alumnos,ingregarRut());
@@ -186,17 +185,19 @@ void menu(struct Alumno **alumnos)
 				{
 					printf("Hubo un error");
 				}
+				break;
 
 		}
-	}
-	while(opcion!=4);
+	}while(opcion!=4);
 }
 
 
-struct Alumno **alumnos;
+struct Alumno **alumnos=NULL;
 
 main()
 {
+    int i;
 	alumnos=((struct Alumno**)malloc(MAX*sizeof(struct Alumno*)));
+	for (i=0;i<MAX;i++){alumnos[i]=NULL;};
 	menu(alumnos);
 }

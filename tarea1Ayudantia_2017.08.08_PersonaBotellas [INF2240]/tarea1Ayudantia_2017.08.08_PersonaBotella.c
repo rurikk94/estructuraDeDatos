@@ -225,6 +225,18 @@ int ordenarDatos(struct Persona **personas)
 
 }
 
+//struct Persona ** listadoFinalPersonas (struct Persona **clientes){}
+//A realizar
+//Esta función debe  recibir  por  parámetro  
+//el  arreglo  con  el  total  de  las  personas, 
+//y  deberá  retornar  otro  arreglo  con  
+//el consolidado de personas (sin repetirse) sumando 
+//sus valores finales de botellas reutilizadas. 
+//En caso de no existir Personas debe retornar null.
+
+
+
+
 void menu(struct Persona **personas)
 {
 	int opcion =0, respuesta =0;

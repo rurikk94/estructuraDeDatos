@@ -22,7 +22,6 @@ struct Alumno *buscarAlumno(char *rut,struct Alumno **alumnos)
 
             if(strcmp(rut,alumnos[i]->rut)==0)
             {
-				printf("\nAlumno encontrado \n");
                 return alumnos[i];
             }
         }
@@ -58,7 +57,6 @@ int ingresarNota(){
 	int nota;
 	printf("\nIngrese la nota ");
 	scanf("%d",&nota);
-	printf("\nnota ingresada %d ",nota);
 	return nota;
 }
 
@@ -74,7 +72,6 @@ char *ingregarNombre(){
 	strcpy(nombre,buffer);
 
 
-	printf("\n el nombre es %s \n",nombre);
 	return nombre;
 }
 
@@ -90,7 +87,6 @@ char *ingregarRut(){
 	strcpy(rut,buffer);
 
 
-	printf("\n el rut es %s \n",rut);
 	return rut;
 }
 
@@ -113,12 +109,10 @@ struct Alumno *crearAlumno()
 int agregarNotaAlumno(struct Alumno **alumnos,int nota, char *rut)
 {
 	int i;
-	//system("pause");
 	if (alumnos!=NULL && nota!=NULL && buscarAlumno(rut,alumnos)!=NULL)
 	{
 		i=buscarAlumno(rut,alumnos)->plibreNotas;
 		
-		//system("pause");
 		if (i<=50)
 		{
 			buscarAlumno(rut,alumnos)->notas[i]=nota;
@@ -173,7 +167,7 @@ void menu(struct Alumno **alumnos)
 				respuesta= agregarAlumno(alumnos, crearAlumno());
 				if (respuesta==0)
 				{
-					printf("Hubo un error");
+					printf("Hubo un error. Caso1");
 				}
 				else
 				{
@@ -197,7 +191,7 @@ void menu(struct Alumno **alumnos)
 				respuesta= mostrarAlumno(alumnos,ingregarRut());
 				if (respuesta==0)
 				{
-					printf("Hubo un error.  Caso3");
+					printf("No existe el rut");
 				}
 				break;
 

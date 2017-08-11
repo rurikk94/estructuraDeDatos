@@ -11,6 +11,55 @@ struct Persona
 	int cantBotellas;
 };
 
+struct Persona *buscarPersona(char *rut,struct Persona **personas)
+{
+	int i;
+
+    for(i=0;i<MAX;i++)
+    {
+        if(personas[i]!=NULL){
+
+            if(strcmp(rut,personas[i]->rut)==0)
+            {
+                return personas[i];
+            }
+        }
+
+    }
+	return NULL;
+}
+
+int contarBotellas(struct Persona **personas,char *rut)
+{
+	int i,botellas;
+	botellas=0;
+	
+	for (i=0;i<MAX;i++)
+		{
+			if(personas[i]!=NULL){
+
+				if(strcmp(rut,personas[i]->rut)==0)
+				{	
+
+					printf("\n i = %d",i);
+					printf("\n b = %d en este registo",personas[i]->cantBotellas);
+
+					botellas=botellas+(personas[i]->cantBotellas);
+
+					printf("\n t = %d botellas en total en %d vuelta\n",botellas,i);
+				}
+			}
+		}
+
+	system("pause");
+
+	printf("\n saliendo de contar botellas \n");
+	printf("\n hay  %d botellas \n",botellas);
+	system("pause");
+
+	return botellas;
+}
+
 int agregarPersona(struct Persona **personas, struct Persona *nuevo)
 {
 	int i;
@@ -27,6 +76,7 @@ int agregarPersona(struct Persona **personas, struct Persona *nuevo)
 	}
 	return 0;
 }
+
 
 char *ingregarNombre(){
 	char *nombre;
@@ -62,7 +112,7 @@ int ingregarCantBotellas(){
 	int cantBotellas;
 
 	printf(" \nIngrese la cantidad de botellas  \n");
-	scanf("%s",&cantBotellas);
+	scanf("%d",&cantBotellas);
 
 	return cantBotellas;
 }
@@ -80,7 +130,27 @@ struct Persona *crearPersona()
 	nuevo->rut=ingregarRut();
 	nuevo->cantBotellas=ingregarCantBotellas();
 
+
 	return nuevo;
+}
+
+int listarBotellasPersona(struct Persona **personas, char *rut)
+{
+	int i,botellas;
+	struct Persona *persona;
+
+	persona=buscarPersona(rut,personas);
+
+	botellas=0;
+
+	if (personas!=NULL && persona!=NULL)
+	{
+		printf("\nNombre de la persona: %s \n",persona->nombre);
+		printf("\n Tiene %d botellas \n",contarBotellas(personas,rut));
+		return 1;
+	}
+	return 0;
+
 }
 
 void menu(struct Persona **personas)
@@ -113,6 +183,13 @@ void menu(struct Persona **personas)
 				}
 				break;
 
+			case 2:
+				respuesta= listarBotellasPersona(personas,ingregarRut());
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso2");
+				}
+				break;
 
 		}
 	}while(opcion!=5);

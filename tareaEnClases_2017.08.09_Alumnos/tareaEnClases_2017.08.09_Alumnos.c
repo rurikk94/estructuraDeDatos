@@ -1,3 +1,6 @@
+//Sergio Mora
+//2017.08.10
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,7 +139,7 @@ int mostrarAlumno(struct Alumno **alumnos, char *rut)
 		{
 			for (i=0;i<ultimo;i++)
 			{
-				printf("\n nota num %d : %d \n",i,buscarAlumno(rut,alumnos)->notas[i]);
+				printf("\n nota num %d : %d \n",i+1,buscarAlumno(rut,alumnos)->notas[i]);
 			}
 			return 1;
 		}
@@ -183,7 +186,7 @@ void menu(struct Alumno **alumnos)
 				}
 				else
 				{
-					printf("La nota se agregó");
+					printf("La nota se agrego");
 				}
 				break;
 

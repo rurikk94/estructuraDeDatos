@@ -153,11 +153,72 @@ int listarBotellasPersona(struct Persona **personas, char *rut)
 	botellas=0;
 	
 
-	printf("\npaso buscarPersona");
 	if (personas!=NULL && persona!=NULL)
 	{
 		printf("\nNombre de la persona: %s \n",persona->nombre);
 		printf("\n Tiene %d botellas \n",contarBotellas(personas,rut));
+		return 1;
+	}
+	return 0;
+
+}
+
+int ordenarDatos(struct Persona **personas)
+{
+	int i,j,maximoBotellas,pos;
+	struct Persona *aux;
+
+	aux=((struct Persona*)malloc(sizeof(struct Persona)));
+	pos=0;
+	maximoBotellas=0;
+
+
+	if (personas!=NULL)
+	{
+
+		for (i=0;i<MAX-1;i++)
+		{
+			if (personas[i]!=NULL)
+			{
+				if (personas[i]->cantBotellas!=NULL)
+				{
+					maximoBotellas=personas[i]->cantBotellas;
+
+
+					for (j=i+1;j<MAX;j++)
+					{
+
+						if (personas[j]!=NULL)
+						{
+
+							if (personas[j]->cantBotellas!=NULL)
+							{
+								if((personas[j]->cantBotellas)>maximoBotellas)
+								{
+									maximoBotellas=personas[j]->cantBotellas;
+									pos=j;
+
+									
+								}
+							}
+						}
+					}				
+					aux=personas[pos];
+					personas[pos]=personas[i];
+					personas[i]=aux;
+				}
+			}			
+		}
+		
+		printf("\nEl nuevo orden es el siguente!!:\n");
+
+		for (i=0;i<MAX;i++)
+		{
+			if (personas[i]!=NULL)
+			{
+				printf("\n%d botellas\n",personas[i]->cantBotellas);
+			}
+		}
 		return 1;
 	}
 	return 0;
@@ -170,7 +231,7 @@ void menu(struct Persona **personas)
 
 	do
 	{
-		printf("%s","\n");
+		printf("%s","\n\n");
 		printf("%s","1.- Agregar Persona\n");
 		printf("%s","2.- Listar botellas que ha reciclado una persona\n");
 		printf("%s","3.- Eliminar todos los registros de una persona\n");
@@ -211,6 +272,18 @@ void menu(struct Persona **personas)
 				else
 				{
 					printf("La persona fue eliminada");
+				}
+				break;
+
+			case 4:
+				respuesta= ordenarDatos(personas);
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso4");
+				}
+				else
+				{
+					printf("Los datos fueron ordenados");
 				}
 				break;
 

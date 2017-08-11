@@ -22,6 +22,7 @@ struct Alumno *buscarAlumno(char *rut,struct Alumno **alumnos)
 
             if(strcmp(rut,alumnos[i]->rut)==0)
             {
+				printf("\nAlumno encontrado \n");
                 return alumnos[i];
             }
         }
@@ -52,6 +53,47 @@ int agregarAlumno(struct Alumno **alumnos, struct Alumno *nuevo)
 	return 0;
 }
 
+
+int ingresarNota(){
+	int nota;
+	printf("\nIngrese la nota ");
+	scanf("%d",&nota);
+	printf("\nnota ingresada %d ",nota);
+	return nota;
+}
+
+char *ingregarNombre(){
+	char *nombre;
+	char buffer[50];
+	int largo;
+
+	printf(" \n Ingrese el nombre \n ");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nombre,buffer);
+
+
+	printf("\n el nombre es %s \n",nombre);
+	return nombre;
+}
+
+char *ingregarRut(){
+	char *rut;
+	char buffer[50];
+	int largo;
+
+	printf(" \nIngrese el rut  \n");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	rut=(char*)malloc(largo*sizeof(char));
+	strcpy(rut,buffer);
+
+
+	printf("\n el rut es %s \n",rut);
+	return rut;
+}
+
 struct Alumno *crearAlumno()
 {
 	struct Alumno *nuevo;
@@ -60,52 +102,23 @@ struct Alumno *crearAlumno()
 
 	nuevo=((struct Alumno*)malloc(sizeof(struct Alumno)));
 
-	printf("Ingrese el nombre");
-	scanf(" %[^\n]",buffer);
-	largo=strlen(buffer);
-	nuevo->nombre=((char *)malloc(largo*sizeof(char)));
-	strcpy(nuevo->nombre,buffer);
 
-
-
-	printf("Ingrese el rut");
-	scanf(" %[^\n]",buffer);
-	largo=strlen(buffer);
-	nuevo->rut=((char *)malloc(largo*sizeof(char)));
-	strcpy(nuevo->rut,buffer);
+	nuevo->nombre=ingregarNombre();
+	nuevo->rut=ingregarRut();
 
 	nuevo->plibreNotas=0;
 
 	return nuevo;
 }
-
-int agregarNota(){
-	int nota;
-	printf("Ingrese la nota");
-	scanf("%d",&nota);
-	return nota;
-}
-
-char *ingregarRut(){
-	char *rut;
-	char buffer[50];
-	int largo;
-
-	printf("Ingrese el rut");
-	scanf("%s",buffer);
-	largo=strlen(buffer);
-	rut=(char*)malloc(largo*sizeof(char));
-	strcpy(rut,buffer);
-	free(buffer);
-	return rut;
-}
-
 int agregarNotaAlumno(struct Alumno **alumnos,int nota, char *rut)
 {
 	int i;
-	if (alumnos!=NULL && nota!=NULL && buscarAlumno(rut,alumnos)==NULL)
+	//system("pause");
+	if (alumnos!=NULL && nota!=NULL && buscarAlumno(rut,alumnos)!=NULL)
 	{
 		i=buscarAlumno(rut,alumnos)->plibreNotas;
+		
+		//system("pause");
 		if (i<=50)
 		{
 			buscarAlumno(rut,alumnos)->notas[i]=nota;
@@ -123,13 +136,13 @@ int mostrarAlumno(struct Alumno **alumnos, char *rut)
 	int i,ultimo;
 	if (alumnos!=NULL && buscarAlumno(rut,alumnos)!=NULL)
 	{
-		printf("Nombre del alumno: %s\n",buscarAlumno(rut,alumnos)->nombre);
-		ultimo=(buscarAlumno(rut,alumnos)->plibreNotas)-1;
+		printf("\nNombre del alumno: %s \n",buscarAlumno(rut,alumnos)->nombre);
+		ultimo=(buscarAlumno(rut,alumnos)->plibreNotas);
 		if (ultimo>=0)
 		{
 			for (i=0;i<ultimo;i++)
 			{
-				printf("nota n° %d: %d",i,buscarAlumno(rut,alumnos)->notas[i]);
+				printf("\n nota num %d : %d \n",i,buscarAlumno(rut,alumnos)->notas[i]);
 			}
 			return 1;
 		}
@@ -145,6 +158,7 @@ void menu(struct Alumno **alumnos)
 
 	do
 	{
+		printf("%s","\n");
 		printf("%s","1.- Agregar Alumno\n");
 		printf("%s","2.- Agregar Nota a Alumno\n");
 		printf("%s","3.- Buscar un Alumno por rut\n");
@@ -163,15 +177,15 @@ void menu(struct Alumno **alumnos)
 				}
 				else
 				{
-					printf("El alumno se agregó");
+					printf("El alumno se agrego");
 				}
 				break;
 
 			case 2:
-				respuesta= agregarNotaAlumno(alumnos,agregarNota(),ingregarRut());
+				respuesta= agregarNotaAlumno(alumnos,ingresarNota(),ingregarRut());
 				if (respuesta==0)
 				{
-					printf("Hubo un error");
+					printf("Hubo un error. Caso2");
 				}
 				else
 				{
@@ -183,7 +197,7 @@ void menu(struct Alumno **alumnos)
 				respuesta= mostrarAlumno(alumnos,ingregarRut());
 				if (respuesta==0)
 				{
-					printf("Hubo un error");
+					printf("Hubo un error.  Caso3");
 				}
 				break;
 

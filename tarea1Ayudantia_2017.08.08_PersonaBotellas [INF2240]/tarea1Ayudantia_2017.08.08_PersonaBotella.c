@@ -13,6 +13,7 @@ struct Persona
 
 struct Persona *buscarPersona(char *rut,struct Persona **personas)
 {
+	
 	int i;
 
     for(i=0;i<MAX;i++)
@@ -26,6 +27,7 @@ struct Persona *buscarPersona(char *rut,struct Persona **personas)
         }
 
     }
+	
 	return NULL;
 }
 
@@ -33,23 +35,17 @@ int contarBotellas(struct Persona **personas,char *rut)
 {
 	int i,botellas;
 	botellas=0;
-	
+
 	for (i=0;i<MAX;i++)
 		{
 			if(personas[i]!=NULL){
 
 				if(strcmp(rut,personas[i]->rut)==0)
-				{	
+				{
 					botellas=botellas+(personas[i]->cantBotellas);
 				}
 			}
 		}
-
-	system("pause");
-
-	printf("\n saliendo de contar botellas \n");
-	printf("\n hay  %d botellas \n",botellas);
-	system("pause");
 
 	return botellas;
 }
@@ -128,6 +124,25 @@ struct Persona *crearPersona()
 	return nuevo;
 }
 
+int eliminarRegistrosPersona(struct Persona **personas, char *rut)
+{
+	int i;
+
+	if (personas!=NULL)
+	{
+		for (i=0;i<MAX;i++)
+		{
+			if(personas[i]!=NULL && strcmp(rut,personas[i]->rut)==0)
+            {
+				personas[i]=NULL;
+            }
+		}
+		return 1;
+	}
+	return 0;
+}
+
+
 int listarBotellasPersona(struct Persona **personas, char *rut)
 {
 	int i,botellas;
@@ -136,7 +151,9 @@ int listarBotellasPersona(struct Persona **personas, char *rut)
 	persona=buscarPersona(rut,personas);
 
 	botellas=0;
+	
 
+	printf("\npaso buscarPersona");
 	if (personas!=NULL && persona!=NULL)
 	{
 		printf("\nNombre de la persona: %s \n",persona->nombre);
@@ -156,7 +173,7 @@ void menu(struct Persona **personas)
 		printf("%s","\n");
 		printf("%s","1.- Agregar Persona\n");
 		printf("%s","2.- Listar botellas que ha reciclado una persona\n");
-		printf("%s","3.- Eliminar registros de una persona\n");
+		printf("%s","3.- Eliminar todos los registros de una persona\n");
 		printf("%s","4.- Ordenar datos decendentemente\n");
 		printf("%s","5.- Salir\n");
 
@@ -182,6 +199,18 @@ void menu(struct Persona **personas)
 				if (respuesta==0)
 				{
 					printf("Hubo un error. Caso2");
+				}
+				break;
+
+			case 3:
+				respuesta= eliminarRegistrosPersona(personas,ingregarRut());
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso3");
+				}
+				else
+				{
+					printf("La persona fue eliminada");
 				}
 				break;
 

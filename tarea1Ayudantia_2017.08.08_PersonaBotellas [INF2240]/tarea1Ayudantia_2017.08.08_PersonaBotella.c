@@ -40,13 +40,7 @@ int contarBotellas(struct Persona **personas,char *rut)
 
 				if(strcmp(rut,personas[i]->rut)==0)
 				{	
-
-					printf("\n i = %d",i);
-					printf("\n b = %d en este registo",personas[i]->cantBotellas);
-
 					botellas=botellas+(personas[i]->cantBotellas);
-
-					printf("\n t = %d botellas en total en %d vuelta\n",botellas,i);
 				}
 			}
 		}

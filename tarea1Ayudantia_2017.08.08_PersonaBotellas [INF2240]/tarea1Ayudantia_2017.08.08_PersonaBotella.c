@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 10000
+#define MAX 100
 
 struct Persona
 {
@@ -107,20 +107,25 @@ int ingregarCantBotellas(){
 	return cantBotellas;
 }
 
-struct Persona *crearPersona()
+struct Persona *crearPersona(int cantBotellas,char *rut,char *nombre)
 {
+
 	struct Persona *nuevo;
-	char buffer[50];
 	int largo;
 
 	nuevo=((struct Persona*)malloc(sizeof(struct Persona)));
 
+	largo=strlen(nombre);
+	nuevo->nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->nombre,nombre);
 
-	nuevo->nombre=ingregarNombre();
-	nuevo->rut=ingregarRut();
-	nuevo->cantBotellas=ingregarCantBotellas();
 
+	largo=strlen(rut);
+	nuevo->rut=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->rut,rut);
 
+	nuevo->cantBotellas=cantBotellas;
+	
 	return nuevo;
 }
 
@@ -169,9 +174,6 @@ int ordenarDatos(struct Persona **personas)
 	struct Persona *aux;
 
 	aux=((struct Persona*)malloc(sizeof(struct Persona)));
-	pos=0;
-	maximoBotellas=0;
-
 
 	if (personas!=NULL)
 	{
@@ -182,8 +184,8 @@ int ordenarDatos(struct Persona **personas)
 			{
 				if (personas[i]->cantBotellas!=NULL)
 				{
+					c=i;
 					maximoBotellas=personas[i]->cantBotellas;
-
 
 					for (j=i+1;j<MAX;j++)
 					{
@@ -193,16 +195,17 @@ int ordenarDatos(struct Persona **personas)
 
 							if (personas[j]->cantBotellas!=NULL)
 							{
-								if((personas[j]->cantBotellas)>maximoBotellas)
+
+								if(maximoBotellas<(personas[j]->cantBotellas))
 								{
 									maximoBotellas=personas[j]->cantBotellas;
 									pos=j;
-
 									
 								}
 							}
 						}
-					}				
+					}
+					
 					aux=personas[pos];
 					personas[pos]=personas[i];
 					personas[i]=aux;
@@ -211,12 +214,11 @@ int ordenarDatos(struct Persona **personas)
 		}
 		
 		printf("\nEl nuevo orden es el siguente!!:\n");
-
 		for (i=0;i<MAX;i++)
 		{
 			if (personas[i]!=NULL)
 			{
-				printf("\n%d botellas\n",personas[i]->cantBotellas);
+				printf("\n%d botellas - %s rut\n",personas[i]->cantBotellas,personas[i]->rut);
 			}
 		}
 		return 1;
@@ -227,12 +229,71 @@ int ordenarDatos(struct Persona **personas)
 
 //struct Persona ** listadoFinalPersonas (struct Persona **clientes){}
 //A realizar
-//Esta función debe  recibir  por  parámetro  
+//Esta funcion debe  recibir  por  parametro  
 //el  arreglo  con  el  total  de  las  personas, 
-//y  deberá  retornar  otro  arreglo  con  
+//y  debera  retornar  otro  arreglo  con  
 //el consolidado de personas (sin repetirse) sumando 
 //sus valores finales de botellas reutilizadas. 
 //En caso de no existir Personas debe retornar null.
+
+struct Persona ** listadoFinalPersonas (struct Persona **clientes)
+{
+	int i,j,contBotellas,contPersonas,respuesta;
+	struct Persona **personasR=NULL;
+	struct Persona **personasConsolidadas=NULL;
+	char *rut;
+
+
+	if (clientes!=NULL)
+	{
+		personasR=clientes;
+	}
+	contPersonas=0;
+
+	personasConsolidadas=((struct Persona**)malloc(MAX*sizeof(struct Persona*)));
+
+	//recorrera el arreglo, y revisarÃ¡ los datos de un rut diferente por cada aumento de i,
+	//ya que mientra recorre con j y compara si tiene el mismo rut, sumara las botellas de la persona j al contador y despues se eliminara la persona j
+	// para no volver a revisarla con el contador i
+	for (i=0;i<MAX;i++)
+	{
+
+		if (personasR[i]!=NULL)
+		{
+			contBotellas=(personasR[i]->cantBotellas);
+
+			for (j=i+1;j<MAX;j++)
+			{
+				if(personasR[j]!=NULL)
+				{
+					if(strcmp(personasR[j]->rut,personasR[i]->rut)==0)
+					{
+						contBotellas=contBotellas+(personasR[j]->cantBotellas);						
+						personasR[j]=NULL;						
+					}
+				}
+
+			}
+
+			personasConsolidadas[contPersonas]=crearPersona(contBotellas,personasR[i]->rut,personasR[i]->nombre);
+		
+			contPersonas++;
+		}		
+	}
+
+	if (contPersonas>0)
+	{
+		printf("contPersonas=%d",(contPersonas));
+		printf("\nLos datos consolidados son los siguentes!!:\n");
+		for (i=0;i<contPersonas;i++)
+		{
+			//printf("\n %s nombre - %s rut - %d botellas\n",personasConsolidadas[i]->nombre,personasConsolidadas[i]->rut,personasConsolidadas[i]->cantBotellas);			
+		}
+		return personasConsolidadas;
+	}
+	return NULL;
+	
+}
 
 
 
@@ -248,7 +309,8 @@ void menu(struct Persona **personas)
 		printf("%s","2.- Listar botellas que ha reciclado una persona\n");
 		printf("%s","3.- Eliminar todos los registros de una persona\n");
 		printf("%s","4.- Ordenar datos decendentemente\n");
-		printf("%s","5.- Salir\n");
+		printf("%s","5.- Consolidar datos\n");
+		printf("%s","6.- Salir\n");
 
 		scanf("%d",&opcion);
 
@@ -256,7 +318,7 @@ void menu(struct Persona **personas)
 		{
 
 			case 1:
-				respuesta= agregarPersona(personas, crearPersona());
+				respuesta= agregarPersona(personas, crearPersona(ingregarCantBotellas(),ingregarRut(),ingregarNombre()));
 				if (respuesta==0)
 				{
 					printf("Hubo un error. Caso1");
@@ -299,8 +361,20 @@ void menu(struct Persona **personas)
 				}
 				break;
 
+			case 5:
+				;
+				if (listadoFinalPersonas(personas)==NULL)
+				{
+					printf("Hubo un error. Caso5");
+				}
+				else
+				{
+					printf("Los datos fueron consolidados");
+				}
+				break;
+
 		}
-	}while(opcion!=5);
+	}while(opcion!=6);
 }
 
 

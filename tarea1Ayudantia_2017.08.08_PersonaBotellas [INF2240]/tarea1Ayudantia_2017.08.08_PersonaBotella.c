@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 100
+#define MAX 100000
 
 struct Persona
 {
@@ -11,30 +11,30 @@ struct Persona
 	int cantBotellas;
 };
 
-
+struct Persona *buscarPersona(char *,struct Persona **);
 int contarBotellas(struct Persona **,char *);
 int agregarPersona(struct Persona **, struct Persona *);
 char *ingresarNombre();
 char *ingresarRut();
 int ingresarCantBotellas();
+struct Persona *crearPersona(int cantBotellas,char *,char *);
 int eliminarRegistrosPersona(struct Persona **, char *);
 int listarBotellasPersona(struct Persona **, char *);
-int ordenarDatos(struct Persona **);
-struct Persona *crearPersona(int ,char *,char *);
-void menu(struct Persona **);
-struct Persona *buscarPersona(char *,struct Persona **);
+int ordenarDatos(struct Persona **personas);
 struct Persona ** listadoFinalPersonas (struct Persona **);
+void menu(struct Persona **);
+void main();
 
+struct Persona **personas=NULL;
 
-struct Persona **personas;
-
-int main()
+void main()
 {
     int i;
 	personas=((struct Persona**)malloc(MAX*sizeof(struct Persona*)));
+	for (i=0;i<MAX;i++){personas[i]=NULL;};
 	menu(personas);
-	return 0;
 }
+
 
 
 void menu(struct Persona **personas)
@@ -116,6 +116,8 @@ void menu(struct Persona **personas)
 	}while(opcion!=6);
 }
 
+
+
 struct Persona *buscarPersona(char *rut,struct Persona **personas)
 {
 	
@@ -171,6 +173,7 @@ int agregarPersona(struct Persona **personas, struct Persona *nuevo)
 	}
 	return 0;
 }
+
 
 char *ingresarNombre(){
 	char *nombre;
@@ -250,6 +253,7 @@ int eliminarRegistrosPersona(struct Persona **personas, char *rut)
 	}
 	return 0;
 }
+
 
 int listarBotellasPersona(struct Persona **personas, char *rut)
 {
@@ -397,6 +401,3 @@ struct Persona ** listadoFinalPersonas (struct Persona **clientes)
 	return NULL;
 	
 }
-
-
-

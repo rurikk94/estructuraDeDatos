@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 100
+#define MAX 100000
 
 struct Persona
 {
@@ -10,6 +10,113 @@ struct Persona
 	char *rut;
 	int cantBotellas;
 };
+
+struct Persona *buscarPersona(char *,struct Persona **);
+int contarBotellas(struct Persona **,char *);
+int agregarPersona(struct Persona **, struct Persona *);
+char *ingresarNombre();
+char *ingresarRut();
+int ingresarCantBotellas();
+struct Persona *crearPersona(int cantBotellas,char *,char *);
+int eliminarRegistrosPersona(struct Persona **, char *);
+int listarBotellasPersona(struct Persona **, char *);
+int ordenarDatos(struct Persona **personas);
+struct Persona ** listadoFinalPersonas (struct Persona **);
+void menu(struct Persona **);
+void main();
+
+struct Persona **personas=NULL;
+
+void main()
+{
+    int i;
+	personas=((struct Persona**)malloc(MAX*sizeof(struct Persona*)));
+	for (i=0;i<MAX;i++){personas[i]=NULL;};
+	menu(personas);
+}
+
+
+
+void menu(struct Persona **personas)
+{
+	int opcion =0, respuesta =0;
+
+	do
+	{
+		printf("%s","\n\n");
+		printf("%s","1.- Agregar Persona\n");
+		printf("%s","2.- Listar botellas que ha reciclado una persona\n");
+		printf("%s","3.- Eliminar todos los registros de una persona\n");
+		printf("%s","4.- Ordenar datos decendentemente\n");
+		printf("%s","5.- Consolidar datos\n");
+		printf("%s","6.- Salir\n");
+
+		scanf("%d",&opcion);
+
+		switch(opcion)
+		{
+
+			case 1:
+				respuesta= agregarPersona(personas, crearPersona(ingresarCantBotellas(),ingresarRut(),ingresarNombre()));
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso1");
+				}
+				else
+				{
+					printf("La persona se agrego al sistema");
+				}
+				break;
+
+			case 2:
+				respuesta= listarBotellasPersona(personas,ingresarRut());
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso2");
+				}
+				break;
+
+			case 3:
+				respuesta= eliminarRegistrosPersona(personas,ingresarRut());
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso3");
+				}
+				else
+				{
+					printf("La persona fue eliminada");
+				}
+				break;
+
+			case 4:
+				respuesta= ordenarDatos(personas);
+				if (respuesta==0)
+				{
+					printf("Hubo un error. Caso4");
+				}
+				else
+				{
+					printf("Los datos fueron ordenados");
+				}
+				break;
+
+			case 5:
+				;
+				if (listadoFinalPersonas(personas)==NULL)
+				{
+					printf("Hubo un error. Caso5");
+				}
+				else
+				{
+					printf("Los datos fueron consolidados");
+				}
+				break;
+
+		}
+	}while(opcion!=6);
+}
+
+
 
 struct Persona *buscarPersona(char *rut,struct Persona **personas)
 {
@@ -68,7 +175,7 @@ int agregarPersona(struct Persona **personas, struct Persona *nuevo)
 }
 
 
-char *ingregarNombre(){
+char *ingresarNombre(){
 	char *nombre;
 	char buffer[50];
 	int largo;
@@ -83,7 +190,7 @@ char *ingregarNombre(){
 	return nombre;
 }
 
-char *ingregarRut(){
+char *ingresarRut(){
 	char *rut;
 	char buffer[50];
 	int largo;
@@ -98,7 +205,7 @@ char *ingregarRut(){
 	return rut;
 }
 
-int ingregarCantBotellas(){
+int ingresarCantBotellas(){
 	int cantBotellas;
 
 	printf(" \nIngrese la cantidad de botellas  \n");
@@ -184,7 +291,7 @@ int ordenarDatos(struct Persona **personas)
 			{
 				if (personas[i]->cantBotellas!=NULL)
 				{
-					c=i;
+					pos=i;
 					maximoBotellas=personas[i]->cantBotellas;
 
 					for (j=i+1;j<MAX;j++)
@@ -283,8 +390,8 @@ struct Persona ** listadoFinalPersonas (struct Persona **clientes)
 
 	if (contPersonas>0)
 	{
-		printf("contPersonas=%d",(contPersonas));
-		printf("\nLos datos consolidados son los siguentes!!:\n");
+		//printf("contPersonas=%d",(contPersonas));
+		//printf("\nLos datos consolidados son los siguentes!!:\n");
 		for (i=0;i<contPersonas;i++)
 		{
 			//printf("\n %s nombre - %s rut - %d botellas\n",personasConsolidadas[i]->nombre,personasConsolidadas[i]->rut,personasConsolidadas[i]->cantBotellas);			
@@ -293,97 +400,4 @@ struct Persona ** listadoFinalPersonas (struct Persona **clientes)
 	}
 	return NULL;
 	
-}
-
-
-
-
-void menu(struct Persona **personas)
-{
-	int opcion =0, respuesta =0;
-
-	do
-	{
-		printf("%s","\n\n");
-		printf("%s","1.- Agregar Persona\n");
-		printf("%s","2.- Listar botellas que ha reciclado una persona\n");
-		printf("%s","3.- Eliminar todos los registros de una persona\n");
-		printf("%s","4.- Ordenar datos decendentemente\n");
-		printf("%s","5.- Consolidar datos\n");
-		printf("%s","6.- Salir\n");
-
-		scanf("%d",&opcion);
-
-		switch(opcion)
-		{
-
-			case 1:
-				respuesta= agregarPersona(personas, crearPersona(ingregarCantBotellas(),ingregarRut(),ingregarNombre()));
-				if (respuesta==0)
-				{
-					printf("Hubo un error. Caso1");
-				}
-				else
-				{
-					printf("La persona se agrego al sistema");
-				}
-				break;
-
-			case 2:
-				respuesta= listarBotellasPersona(personas,ingregarRut());
-				if (respuesta==0)
-				{
-					printf("Hubo un error. Caso2");
-				}
-				break;
-
-			case 3:
-				respuesta= eliminarRegistrosPersona(personas,ingregarRut());
-				if (respuesta==0)
-				{
-					printf("Hubo un error. Caso3");
-				}
-				else
-				{
-					printf("La persona fue eliminada");
-				}
-				break;
-
-			case 4:
-				respuesta= ordenarDatos(personas);
-				if (respuesta==0)
-				{
-					printf("Hubo un error. Caso4");
-				}
-				else
-				{
-					printf("Los datos fueron ordenados");
-				}
-				break;
-
-			case 5:
-				;
-				if (listadoFinalPersonas(personas)==NULL)
-				{
-					printf("Hubo un error. Caso5");
-				}
-				else
-				{
-					printf("Los datos fueron consolidados");
-				}
-				break;
-
-		}
-	}while(opcion!=6);
-}
-
-
-struct Persona **personas=NULL;
-
-main()
-{
-    int i;
-	personas=((struct Persona**)malloc(MAX*sizeof(struct Persona*)));
-	for (i=0;i<MAX;i++){personas[i]=NULL;};
-	menu(personas);
 }

@@ -41,6 +41,7 @@ struct Persona
 };
 
 int agregarDiputado(struct Servel *,char *);
+int crearPersona (char *,char *);
 int numeroDistritoConMasDiputado(struct Servel *);
 char *ingresarNombre();
 char *ingresarRut();
@@ -79,9 +80,13 @@ void menu(struct Servel *s)
 				{
 					printf("Hubo un error. Caso1");
 				}
-				else
+				if (respuesta==0)
 				{
 					printf("El Diputado se agrego al sistema");
+				}
+				if (respuesta==-1)
+				{
+					printf("El Diputado ya existe");
 				}
 				break;
 
@@ -97,5 +102,68 @@ void menu(struct Servel *s)
 				}
 				break;
 		}
-}while(opcion!=0);
+	}while(opcion!=0);
 };
+
+int agregarDiputado(struct Servel *s,char *rut)
+{
+	struct NodoParlamentario *recDiputados=*s->camara->diputados; //se copia el nodo de los diputados
+
+	if (*recDiputados==NULL) //se comprueba que exista algo, sino existe se agrega el diputado
+	{
+		recDiputados->persona=crearPersona(ingresarNombre(),rut);
+		recDiputados->sig=NULL;
+		return 1;
+	}else	//si existe, se recorre hasta el final, hasta que sea null
+	{
+		while (recDiputados!=NULL) //se revisa si no es null
+		{
+			if(strcmp(rut,recDiputados->persona->rut)==0) // si exite dato, se comprueba si está repetido, si lo está finaliza -1
+      	return -1;
+			if (recDiputados->sig==NULL) // si el siguiente es el ultimo, se agrega el diputado al final, y finaliza 1
+			{
+				recDiputados->sig->persona=crearPersona(ingresarNombre(),rut);
+				recDiputados->sig->sig=NULL;
+				return 1;
+			}
+			recDiputados=recDiputados->sig //sino pasa al siguiente diputado
+		}
+	}
+	return 0;	//si no agrega finaliza con 0
+};
+
+
+struct Persona *crearPersona(char *nombre,char *rut)
+{
+
+	struct Persona *nuevo;
+	int largo;
+
+	nuevo=((struct Persona*)malloc(sizeof(struct Persona)));
+
+	largo=strlen(nombre);
+	nuevo->nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->nombre,nombre);
+
+
+	largo=strlen(rut);
+	nuevo->rut=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->rut,rut);
+
+	return nuevo;
+}
+
+char *ingresarNombre(){
+	char *nombre;
+	char buffer[50];
+	int largo;
+
+	printf(" \n Ingrese el nombre \n ");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nombre,buffer);
+
+
+	return nombre;
+}

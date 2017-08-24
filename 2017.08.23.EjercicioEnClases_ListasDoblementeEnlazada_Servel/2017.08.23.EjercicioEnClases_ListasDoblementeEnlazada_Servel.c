@@ -45,6 +45,7 @@ int crearPersona (char *,char *);
 int numeroDistritoConMasDiputado(struct Servel *);
 char *ingresarNombre();
 char *ingresarRut();
+int contarDiputados(struct NodoCandidato *)
 void menu(struct Servel *);
 void main();
 
@@ -96,13 +97,50 @@ void menu(struct Servel *s)
 				{
 					printf("Hubo un error. Caso 2");
 				}
-				if (respuesta==0)
+				else
 				{
-					printf("Ninguna Distrito tiene Diputados");
+					printf("El Distrito %d tiene mas Diputados",respuesta);
 				}
 				break;
 		}
 	}while(opcion!=0);
+};
+
+int numeroDistritoConMasDiputado(struct Servel *s)
+{
+	int i,numDistrito,masDiputados=0,cont=0;
+
+	if(*s->plibreDistritos>0)//deberia bastar con plibreDistritos>0
+	{
+		for (i = 0; i < plibreDistritos; i++)
+		{
+			if (*s->distritos[i]!=NULL)//comprueba si esa posicion del arreglo existen datos, si existen...
+			{
+				if (masDiputados<contarDiputados(*s->distritos[i]->candidato))
+				{
+					masDiputados=contarDiputados(*s->distritos[i]->candidato);
+					numDistrito=*s->distritos[i]->numero;
+				}
+			}
+		}
+		return numDistrito;
+	}
+	return -1
+};
+
+int contarDiputados(struct NodoCandidato *candidato)
+{
+	struct NodoCandidato *rec=*candidato;
+	int cont=0;
+
+	while (rec!=NULL) { //si existen candidatos
+		cont++;//lo cuenta
+		if (rec->sig!=candidato)// si no vuelvo al primer candidato
+		{
+			rec=rec->sig;//avanzo al siguiente
+		}
+	}
+	return cont;
 };
 
 int agregarDiputado(struct Servel *s,char *rut)
@@ -166,4 +204,19 @@ char *ingresarNombre(){
 
 
 	return nombre;
+}
+
+char *ingresarRut(){
+	char *rut;
+	char buffer[50];
+	int largo;
+
+	printf(" \nIngrese el rut  \n");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	rut=(char*)malloc(largo*sizeof(char));
+	strcpy(rut,buffer);
+
+
+	return rut;
 }

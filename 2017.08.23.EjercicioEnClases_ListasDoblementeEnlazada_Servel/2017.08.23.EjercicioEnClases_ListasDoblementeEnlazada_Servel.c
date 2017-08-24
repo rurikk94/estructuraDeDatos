@@ -43,6 +43,8 @@ struct Persona
 int agregarDiputado(struct Servel *,char *);
 int crearPersona (char *,char *);
 int numeroDistritoConMasDiputado(struct Servel *);
+struct Persona *buscarCandidato(struct Servel *,char *);
+struct Persona *compararCandidatoRut(struct NodoCandidato *, char *)
 char *ingresarNombre();
 char *ingresarRut();
 int contarDiputados(struct NodoCandidato *)
@@ -146,30 +148,71 @@ int contarDiputados(struct NodoCandidato *candidato)
 int agregarDiputado(struct Servel *s,char *rut)
 {
 	struct NodoParlamentario *recDiputados=*s->camara->diputados; //se copia el nodo de los diputados
-
-	if (*recDiputados==NULL) //se comprueba que exista algo, sino existe se agrega el diputado
+	
+	if (*s!= NULL && buscarCandidato(s,rut)!=NULL && camara!= NULL)
+		//se comprueba que exista s, el candidato, camara
 	{
-		recDiputados->persona=crearPersona(ingresarNombre(),rut);
+		if (*recDiputados==NULL)
+		{//si no hay diputados, se agrega al principio
+		recDiputados->persona=buscarCandidato(s,rut);//devuelve una Persona;
 		recDiputados->sig=NULL;
-		return 1;
-	}else	//si existe, se recorre hasta el final, hasta que sea null
-	{
-		while (recDiputados!=NULL) //se revisa si no es null
+		return 1;			
+		}
+		else	//si existe diputados, se recorre hasta el final
 		{
-			if(strcmp(rut,recDiputados->persona->rut)==0) // si exite dato, se comprueba si está repetido, si lo está finaliza -1
-      	return -1;
-			if (recDiputados->sig==NULL) // si el siguiente es el ultimo, se agrega el diputado al final, y finaliza 1
+			while (recDiputados!=NULL)
 			{
-				recDiputados->sig->persona=crearPersona(ingresarNombre(),rut);
-				recDiputados->sig->sig=NULL;
-				return 1;
+				if(strcmp(rut,recDiputados->persona->rut)==0) //se comprueba si no está repetido, si lo está finaliza -1
+			return -1;
+				if (recDiputados->sig==NULL) // si el siguiente es el ultimo, se agrega, y finaliza 1
+				{
+					recDiputados->sig->persona=buscarCandidato(s,rut);//asigna el candidato con ese rut en diputados
+					recDiputados->sig->sig=NULL;
+					return 1;
+				}
+				recDiputados=recDiputados->sig //sino pasa al siguiente diputado
 			}
-			recDiputados=recDiputados->sig //sino pasa al siguiente diputado
 		}
 	}
 	return 0;	//si no agrega finaliza con 0
 };
 
+
+struct Persona *buscarCandidato(struct Servel *s,char *rut)
+{
+	int i;
+
+	if(*s!= NULL && *s->plibreDistritos>0)//si existen distritos
+	{
+		for (i = 0; i < plibreDistritos; i++)//los recorre
+		{
+			if (*s->distritos[i]!=NULL)//comprueba si en esa posicion del arreglo existen datos
+			{
+				if(compararCandidatoRut(*s->distritos[i],rut)!=NULL)//revisa si algun candidato tiene ese rut
+				{
+					return compararCandidatoRut(*s->distritos[i],rut);//devuelve ese candidato
+				}
+			}
+			i++;
+		}
+	}
+	return NULL;
+};
+
+struct Persona *compararCandidatoRut(struct NodoCandidato *candidato, char *rut)
+{
+	struct NodoCandidato *rec=*candidato;
+	if (rec!=NULL)
+	{
+		while (rec->sig!=candidato)
+			if((strcmp(rec->persona->rut,rut)==0)
+			{
+				return rec->persona;
+			}
+			rec=rec->sig;
+	}	
+	return NULL
+}
 
 struct Persona *crearPersona(char *nombre,char *rut)
 {

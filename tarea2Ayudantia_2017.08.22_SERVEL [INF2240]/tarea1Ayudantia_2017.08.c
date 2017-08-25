@@ -37,8 +37,8 @@ int contarCandidatos();
 
 int registrarDistrito(struct Distrito **);
 int crearDistrito(struct Persona **, struct Persona *);
-int
-ingresarNumeroDistrito();
+int ingresarNumeroDistrito();
+
 char *ingresarCantidadDiputados();
 
 int registrarVoto();//ingresa nombre de candidato
@@ -146,10 +146,11 @@ int registrarCandidato(struct Distrito **distritos, char *rut, int n)
     return 0;
 }
 
-struct Candidato *buscarCandidato(struct Distrito *distritos, char *rut)
+struct Candidato *buscarCandidato(struct Distrito **distritos, char *rut)
 {
     struct Candidato *persona;
     struct NodoCandidato *rec;
+    int i;
 
     if(distritos!=NULL)
     {
@@ -193,4 +194,44 @@ int registrarDistrito(struct Distrito **distritos)
         }
     }
     return 0;
+}
+
+
+char *ingresarNombre(){
+	char *nombre;
+	char buffer[50];
+	int largo;
+
+	printf(" \n Ingrese el nombre \n ");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nombre,buffer);
+
+
+	return nombre;
+}
+
+char *ingresarRut(){
+	char *rut;
+	char buffer[50];
+	int largo;
+
+	printf(" \nIngrese el rut  \n");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	rut=(char*)malloc(largo*sizeof(char));
+	strcpy(rut,buffer);
+
+
+	return rut;
+}
+
+int ingresarCantBotellas(){
+	int cantBotellas;
+
+	printf(" \nIngrese la cantidad de botellas  \n");
+	scanf("%d",&cantBotellas);
+
+	return cantBotellas;
 }

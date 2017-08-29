@@ -25,28 +25,29 @@ struct Distrito
 };
 
 
-int registrarCandidato();
-int crearCandidato();
+int registrarCandidato(struct Distrito **, char *, int);
+struct Candidato *crearCandidato(char*,char*,char*,int);
 char *ingresarRut();
 char *ingresarNombre();
-char *ingresarPartidoPolitico();
+char *ingresarPartido();
 int ingresarCantidadVotos();
-int agregarCandidato();
+struct NodoCandidato *CrearNodoCandidato(struct Candidato *, struct NodoCandidato *);
 struct Candidato *buscarCandidato(struct Distrito **, char*);
 int contarCandidatos();
 
 int registrarDistrito(struct Distrito **);
-int crearDistrito(struct Persona **, struct Persona *);
+struct Distrito *crearDistrito(int);
 int ingresarNumeroDistrito();
 
 char *ingresarCantidadDiputados();
 
 int registrarVoto();//ingresa nombre de candidato
 
-int ganadoresDistrito();//de un distrito;  recibir el número del distrito y
+int ganadoresDistrito();//de un distrito;  recibir el nÃºmero del distrito y
 						//la cantidad de diputados electos en dicho distrito
 int porcentajeVotosCandidato();//muestra el rut y el porcentaje de votos obtenidos
 int ganadoresTotales();//se muestran todos los candidatos ganadores, para esto se agregan a un arreglo aux y se muestan desde ahi
+int distritoMasCandidatos();//no se ingresa nada, muestra el num de Distrito con mas candidatos
 void main();
 
 
@@ -56,9 +57,10 @@ void main()
 {
 	int opcion=0, res,i;
 	distritos=(struct Distrito**)malloc(CANT*sizeof(struct Distrito*));
-	distritos=NULL;
-    //for(i=0;i<28;i++)
-      //  distritos[i]=NULL;
+	//distritos=NULL;
+    for(i=0;i<CANT;i++)
+        distritos[i]=NULL;
+
 	do
 	{
 		printf("Menu Principal:\n");
@@ -66,11 +68,11 @@ void main()
 		printf("1.-Registrar candidato\n");
 		printf("2.-Registrar distrito\n");
 		printf("3.-Registrar voto\n");
-		printf("4.-Obtener ganadores en un distrito\n");
+		printf("4.-Obtener ganadores en un distrito\n"); //asdqwe
 		printf("5.-Obtener porcentaje de votos de un candidato\n");
 		printf("6.-Ganadores totales\n");
 		printf("7.-Obtener la media de votantes del total de distritos\n");
-		printf("8.-Obtener distrito que tiene más candidatos\n");
+		printf("8.-Obtener distrito que tiene mÃ¡s candidatos\n"); // asdqwe
 		printf("0.-Salir\n");
 		scanf("%d",&opcion);
 
@@ -82,7 +84,7 @@ void main()
             {
                 printf("Error en registro del candidato");
             }
-            else
+            if(res==1)
             {
                 printf("Se registro el candidato");
             }
@@ -109,6 +111,20 @@ void main()
 		case 7:
 			break;
 		case 8:
+			res=distritoMasCandidatos(distritos);
+		    if(res==0)
+            {
+                printf("Ningun distrito tiene participantes");
+            }
+            else
+            {
+				if (res==-1)
+				{ printf("Hubo un error en los datos");}
+				else
+				{
+					printf("Se registro el distrito");
+				}
+            }
 			break;
 		default:
 			break;
@@ -117,33 +133,100 @@ void main()
 	}while(opcion!=0);
 
 }
-int ingresarNumeroDistrito()
+
+int distritoMasCandidatos(struct Distrito **distritos)
 {
-    int n;
-    printf("Ingrese el numero del distrito: ");
-    scanf("%d",&n);
-    return n;
+	int i,numDistritoMayor,cantMayor;
+	
+	numDistritoMayor=0;
+	cantMayor=0;
+
+	for (i=0;i<CANT;i++)
+	{
+		if (distritos[i]!=NULL)
+		{
+			if (cantMayor<contarCandidatosDelDistrito(distritos[i]->head))//recorre la lista de NodoCandidatos del distrito i, y devuelve la cantidad de candidatos
+				cantMayor=contarCandidatosDelDistrito(distritos[i]->head);
+				numDistritoMayor=distritos[i]->numeroDistrito;
+		}
+	}
+
+
+}
+
+int contarCandidatosDelDistrito(struct NodoCandidato *head)
+{
+	struct NodoCandidato *rec=head;
+	int cont;
+	cont =0;
+
+	while(rec!=NULL)
+	{
+		cont++;
+		rec=rec->sig;
+	}
+	return cont;
 }
 
 int registrarCandidato(struct Distrito **distritos, char *rut, int n)
 {
-    int i;
+    int i,largo;
     if(buscarCandidato(*distritos,rut)==NULL)
     {
-        for(i=0;i<28;i++)
+        for(i=0;i<CANT;i++)
         {
-            if(distritos[i]==NULL)
-            {
-                printf("i: %d",i);
-                distritos[i]->numeroDistrito=ingresarNumeroDistrito();
-                system("pause");
-                distritos[i]->cantidadDiputados=0;
-                distritos[i]->head=NULL;
-                return 1;
-            }
+			if (distritos[i]!=NULL)
+			{
+				if (distritos[i]->numeroDistrito==n)
+				{
+					if(1==agregoCandidatoAlNodo(distritos[i]->head,crearCandidato(rut,ingresarNombre(),ingresarPartido(),0)))
+					{
+						distritos[i]->cantidadDiputados++;
+						return 1;//se agregó
+
+					}
+				}
+			}
         }
     }
     return 0;
+}
+
+int agregoCandidatoAlNodo(struct NodoCandidato *headCandidatos,struct Candidato *nuevo)
+{
+	struct NodoCandidato *rec=headCandidatos;
+	
+
+	if (headCandidatos==NULL)
+	{
+		rec=CrearNodoCandidato(nuevo,NULL);
+		return 1;
+	}
+	else
+	{
+
+		while(rec!=NULL)
+		{
+			if (rec->sig==NULL)
+			{
+				rec->sig=CrearNodoCandidato(nuevo,NULL);
+				return 1;
+			}
+			rec=rec->sig;
+		}
+	}
+	return 0;
+}
+
+struct NodoCandidato *CrearNodoCandidato(struct Candidato *candidato, struct NodoCandidato *sig)
+{
+	struct NodoCandidato *nuevoNodo;
+
+	nuevoNodo=(struct NodoCandidato*)malloc(sizeof(struct NodoCandidato));
+	nuevoNodo->sig=NULL;
+	nuevoNodo->candidato=candidato;
+
+	return nuevoNodo;
 }
 
 struct Candidato *buscarCandidato(struct Distrito **distritos, char *rut)
@@ -154,7 +237,7 @@ struct Candidato *buscarCandidato(struct Distrito **distritos, char *rut)
 
     if(distritos!=NULL)
     {
-        for(i=0;i<28;i++)
+        for(i=0;i<CANT;i++)
         {
             if(distritos[i]!=NULL)
             {
@@ -167,7 +250,7 @@ struct Candidato *buscarCandidato(struct Distrito **distritos, char *rut)
                         persona = rec->candidato;
                         return persona;
                     }
-
+					rec=rec->sig;
                 }
             }
         }
@@ -180,15 +263,11 @@ int registrarDistrito(struct Distrito **distritos)
     int n, m, i;
     if(distritos!=NULL)
     {
-        for(i=0;i<28;i++)
+        for(i=0;i<CANT;i++) 
         {
             if(distritos[i]==NULL)
             {
-                printf("i: %d",i);
-                distritos[i]->numeroDistrito=ingresarNumeroDistrito();
-                system("pause");
-                distritos[i]->cantidadDiputados=0;
-                distritos[i]->head=NULL;
+				distritos[i]=crearDistrito(ingresarNumeroDistrito());
                 return 1;
             }
         }
@@ -203,6 +282,21 @@ char *ingresarNombre(){
 	int largo;
 
 	printf(" \n Ingrese el nombre \n ");
+	scanf("%s",buffer);
+	largo=strlen(buffer);
+	nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nombre,buffer);
+
+
+	return nombre;
+}
+
+char *ingresarPartido(){
+	char *nombre;
+	char buffer[50];
+	int largo;
+
+	printf(" \n Ingrese el partido \n ");
 	scanf("%s",buffer);
 	largo=strlen(buffer);
 	nombre=(char*)malloc(largo*sizeof(char));
@@ -227,11 +321,46 @@ char *ingresarRut(){
 	return rut;
 }
 
-int ingresarCantBotellas(){
-	int cantBotellas;
+int ingresarNumeroDistrito(){
+	int num;
 
-	printf(" \nIngrese la cantidad de botellas  \n");
-	scanf("%d",&cantBotellas);
+	printf(" \nIngrese num de distrito\n");
+	scanf("%d",&num);
 
-	return cantBotellas;
+	return num;
+}
+
+struct Candidato *crearCandidato(char *rut,char *nombre,char *partido,int votos)
+{
+	struct Candidato *nuevo=(struct Candidato *)malloc(sizeof(struct Candidato));
+	int largo;
+
+	nuevo->rut;
+	largo=strlen(rut);
+	nuevo->rut=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->rut,rut);
+
+	largo=strlen(nombre);
+	nuevo->nombre=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->nombre,nombre);
+
+	largo=strlen(partido);
+	nuevo->partidoPolitico=(char*)malloc(largo*sizeof(char));
+	strcpy(nuevo->partidoPolitico,partido);
+
+	nuevo->cantidadVotos=votos;
+
+	return nuevo;
+
+}
+
+struct Distrito *crearDistrito(int numDist)
+{
+	struct Distrito *nuevoDistrito=(struct Distrito *)malloc(sizeof(struct Distrito));
+
+	nuevoDistrito->numeroDistrito=numDist;
+	nuevoDistrito->cantidadDiputados=0;
+	nuevoDistrito->head=NULL;
+
+	return nuevoDistrito;
 }

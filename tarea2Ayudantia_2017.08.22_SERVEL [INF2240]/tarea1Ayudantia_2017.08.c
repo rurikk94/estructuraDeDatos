@@ -25,14 +25,17 @@ struct Distrito
 };
 
 
-int registrarCandidato(struct Distrito **, char *, int);
-struct Candidato *crearCandidato(char*,char*,char*,int);
 char *ingresarRut();
 char *ingresarNombre();
 char *ingresarPartido();
 int ingresarCantidadVotos();
+int ingresarCantidadDiputadosElectos();
+
+int registrarCandidato(struct Distrito **, char *, int);
+struct Candidato *crearCandidato(char*,char*,char*,int);
 struct NodoCandidato *CrearNodoCandidato(struct Candidato *, struct NodoCandidato *);
 struct Candidato *buscarCandidato(struct Distrito **, char*);
+struct Candidato *compararCandidato(struct NodoCandidato *, char *);
 int contarCandidatos();
 
 int registrarDistrito(struct Distrito **);
@@ -48,6 +51,9 @@ int ganadoresDistrito();//de un distrito;  recibir el nÃºmero del distrito y
 int porcentajeVotosCandidato();//muestra el rut y el porcentaje de votos obtenidos
 int ganadoresTotales();//se muestran todos los candidatos ganadores, para esto se agregan a un arreglo aux y se muestan desde ahi
 int distritoMasCandidatos();//no se ingresa nada, muestra el num de Distrito con mas candidatos
+void mostrarElectos(struct NodoCandidato *, int);
+int DiputadoConMasVotos(struct NodoCandidato *);
+
 void main();
 
 
@@ -68,11 +74,11 @@ void main()
 		printf("1.-Registrar candidato\n");
 		printf("2.-Registrar distrito\n");
 		printf("3.-Registrar voto\n");
-		printf("4.-Obtener ganadores en un distrito\n"); //asdqwe
+		printf("4.-Obtener ganadores en un distrito\n");
 		printf("5.-Obtener porcentaje de votos de un candidato\n");
 		printf("6.-Ganadores totales\n");
 		printf("7.-Obtener la media de votantes del total de distritos\n");
-		printf("8.-Obtener distrito que tiene mÃ¡s candidatos\n"); // asdqwe
+		printf("8.-Obtener distrito que tiene mÃ¡s candidatos\n");
 		printf("0.-Salir\n");
 		scanf("%d",&opcion);
 
@@ -101,14 +107,63 @@ void main()
             }
 			break;
 		case 3:
+		    res=registrarVoto(distritos);
+		    if(res==0)
+            {
+                printf("Error en registro del voto");
+            }
+            else
+            {
+                printf("Se registro el voto");
+            }
 			break;
 		case 4:
+		    res=ganadoresDistrito(distritos,ingresarNumeroDistrito(),ingresarCantidadDiputadosElectos());
+		    if(res==0)
+			{
+				printf("Error: En registro del distrito, no hay distritos");
+			}
+			if (res==-1)
+			{
+				printf("Error: cantidad de diputados electos es mayor a los existentes");
+			}
+			if (res==1) 
+			{
+				//printf("Se registro el distrito");
+			}	
 			break;
 		case 5:
+		    res=porcentajeVotosCandidato(distritos);
+		    if(res==0)
+            {
+                printf("Error en el porcentaje de votos");
+            }
+            else
+            {
+                printf("Se obtuvo el porcentaje de los votos");
+            }
 			break;
 		case 6:
+		    res=ganadoresTotales(distritos);
+		    if(res==0)
+            {
+                printf("Error en ganadores totales");
+            }
+            else
+            {
+                printf("Se obtuvo el ganadores totales de los votos");
+            }		
 			break;
 		case 7:
+		    res=mediaVotantes(distritos);
+            if(res==0)
+            {
+                printf("Error en la media de los votos");
+            }
+            else
+            {
+                printf("Se obtuvo la media de los votos");
+            }
 			break;
 		case 8:
 			res=distritoMasCandidatos(distritos);
@@ -116,15 +171,14 @@ void main()
             {
                 printf("Ningun distrito tiene participantes");
             }
-            else
-            {
-				if (res==-1)
-				{ printf("Hubo un error en los datos");}
-				else
-				{
-					printf("Se registro el distrito");
-				}
-            }
+			if (res==-1)
+			{
+				printf("Hubo un error en los datos");
+			}
+			if (res==1)
+			{
+				printf(":)");				
+			}
 			break;
 		default:
 			break;
@@ -167,6 +221,7 @@ int contarCandidatosDelDistrito(struct NodoCandidato *head)
 	}
 	return cont;
 }
+
 
 int registrarCandidato(struct Distrito **distritos, char *rut, int n)
 {
@@ -256,6 +311,21 @@ struct Candidato *buscarCandidato(struct Distrito **distritos, char *rut)
         }
     }
     return NULL;
+}
+
+struct Candidato *compararCandidato(struct NodoCandidato *head, char *rut)
+{
+	struct NodoCandidato *rec=head;
+
+	while(rec!=NULL)
+	{
+		if(strcmp(rec->candidato->rut,rut)==0)
+		{
+			return rec->candidato;
+		}
+		rec=rec->sig;
+	}
+	return NULL;
 }
 
 int registrarDistrito(struct Distrito **distritos)
@@ -364,3 +434,147 @@ struct Distrito *crearDistrito(int numDist)
 
 	return nuevoDistrito;
 }
+
+int ingresarCantidadDiputadosElectos()
+{
+    int n;
+    printf("Ingrese cantidad de Diputados a elegir: ");
+    scanf("%d",&n);
+    return n;
+}
+int ganadoresDistrito(struct Distrito **distritos,int numDistrito,int CantidadDiputadosElectosIngresados)
+{
+	int i;	
+
+	for (i=0;i<CANT;i++)
+	{
+		if (distritos[i]!=NULL)//recorre los distritos hasta encontrar el ingresado
+		{
+			//si lo encuentra y CantidadDiputadosElectosIngresados es menor a la cantidad de diputados del distrito
+			if (numDistrito==(distritos[i]->numeroDistrito) && CantidadDiputadosElectosIngresados<distritos[i]->cantidadDiputados)
+			{//muestra los con mas votos
+				mostrarElectos(distritos[i]->head,CantidadDiputadosElectosIngresados);
+				return 1;
+			}
+			else
+			{//cantidad de diputados electos es mayor
+				return -1;
+			}
+		}
+	}
+	return 0;
+}
+
+void mostrarElectos(struct NodoCandidato *head, int cantDiputadosAMostrar)
+{
+	struct NodoCandidato *rec=head;
+	int cantidadMostrada=0,mayorVotos=DiputadoConMasVotos(head);
+	if (mayorVotos > 0)
+	{
+		printf("Los ganadores del distrito son: \n");
+		while (rec!=NULL)
+		{
+			if (rec->candidato->cantidadVotos=mayorVotos)
+			{
+				printf ("%s \n",rec->candidato->nombre);
+			}
+			mayorVotos--;
+			rec=rec->sig;
+		}	
+	}
+	
+}
+
+int DiputadoConMasVotos(struct NodoCandidato *head)
+{
+	struct NodoCandidato *rec=head;
+	int mayorVotos=0;
+	while (rec!=NULL)
+	{
+		if (rec->candidato->cantidadVotos>mayorVotos)
+		{
+			mayorVotos=rec->candidato->cantidadVotos;			
+		}
+		rec=rec->sig;
+	}
+	return mayorVotos;
+}
+
+int registrarVoto(struct Distrito **distritos)
+{
+    int i, votos;
+    for(i=0;i<28;i++)
+    {
+        if(compararNombre(ingresarNombre(),distritos[i]->head)==1)
+                    printf("holi");
+
+            votos=distritos[i]->head->candidato->cantidadVotos;
+            votos++;
+            return 1;
+    }
+    return 0;
+}
+
+int compararNombre(char *n, struct NodoCandidato *head)
+{
+    struct NodoCandidato *rec=head;
+    while(rec->sig!=NULL)
+    {
+        //printf("holi");
+        if(strcmp(n,rec->candidato->nombre)==0)
+        {
+            return 1;
+        }
+        rec=rec->sig;
+    }
+    return 0;
+}
+
+
+int porcentajeVotosCandidato(struct Distrito **distritos,char *rut)
+{
+    struct NodoCandidato *rec;
+    int i, suma=0, porcen;
+    for(i=0;i<28;i++)
+    {
+        rec=distritos[i]->head;
+        while(rec!=NULL)
+        {
+            if(strcmp(rec->candidato->rut,rut)==0)
+            {
+                rec->candidato->rut=rec->candidato->cantidadVotos;
+                while(rec!=NULL)
+                {
+                    suma+=rec->candidato->cantidadVotos;
+                    rec=rec->sig;
+                }
+                //porcen=rut*suma/100;
+            }
+        }
+    }
+}
+
+int ganadoresTotales(struct Distrito **distritos)
+{
+    int i,resp;
+    for(i=0;i<28;i++)
+    {
+        resp=ganadoresDistrito(distritos,i,1);
+    }
+	return resp;
+}
+
+int mediaVotantes(struct Distrito **distritos)
+{
+    int i, votos, suma=0, media;
+    for(i=0;i<28;i++)
+    {
+        votos=distritos[i]->head->candidato->cantidadVotos;
+        suma+=votos;
+    }
+    media=suma/28;
+    printf("La media del total de distritos es %d",media);
+    return 1;
+}
+
+
